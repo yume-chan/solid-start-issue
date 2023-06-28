@@ -3,7 +3,7 @@ import {
   createContext,
   createResource,
   onMount,
-  useContext
+  useContext,
 } from "solid-js";
 import { Outlet } from "solid-start";
 
@@ -15,6 +15,10 @@ export function useMyContext() {
     throw new Error("MyContext not found");
   }
   return value;
+}
+
+function Child(props: { value: InitializedResource<string> }) {
+  return <div>Child: {props.value.latest}</div>;
 }
 
 export default function Layout() {
@@ -31,6 +35,7 @@ export default function Layout() {
   return (
     <MyContext.Provider value={value}>
       <div>Layout: {value.latest}</div>
+      <Child value={value} />
       <Outlet />
     </MyContext.Provider>
   );
