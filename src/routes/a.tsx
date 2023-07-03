@@ -1,13 +1,13 @@
 import {
-  InitializedResource,
+  Accessor,
   createContext,
-  createResource,
+  createSignal,
   onMount,
-  useContext,
+  useContext
 } from "solid-js";
 import { Outlet } from "solid-start";
 
-const MyContext = createContext<InitializedResource<string>>();
+const MyContext = createContext<Accessor<string>>();
 
 export function useMyContext() {
   const value = useContext(MyContext);
@@ -17,24 +17,23 @@ export function useMyContext() {
   return value;
 }
 
-function Child(props: { value: InitializedResource<string> }) {
-  return <div>Child: {props.value.latest}</div>;
+function Child(props: { value: Accessor<string> }) {
+  return <div>Child: {props.value()}</div>;
 }
 
 export default function Layout() {
-  const [value, { mutate }] = createResource(
-    () => { },
-    () => "fetcher",
-    { initialValue: "initial" }
-  );
+  const [value, setValue] = createSignal("initial");
 
   onMount(() => {
-    mutate("mutate");
+    setValue("mutate");
   });
 
   return (
     <MyContext.Provider value={value}>
-      <div>Layout: {value.latest}</div>
+      <div>
+        <button onClick={() => setValue("click")}>Mutate Again</button>
+      </div>
+      <div>Layout: {value()}</div>
       <Child value={value} />
       <Outlet />
     </MyContext.Provider>
